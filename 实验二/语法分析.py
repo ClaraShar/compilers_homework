@@ -1,10 +1,19 @@
 import re
 
+f = open("/Users/clara/Documents/学习/大三上/编译原理/实验二/input.txt", "r", encoding="utf-8")
+temp = f.read()
+f.close()
+words = temp.split(" ")
+it = iter(words)
 
 pattern_identifier = r'[a-zA-Z]\w*' # 标识符正则
 pattern_digit = r'\d+'
 seed_code = {"begin":1, "if":2, "then":3, "while":4, "do":5, "end":6, "+":13, "-":14, "*":15, "/":16, ":":17, ":=":18, "<":20, "<>":21, "<=":22, ">":23, ">=":24, "=":25, ";":26, "(":27, ")":28, "#":0}
 
+
+def scaner():
+	word=next(it)
+	return word
 
 
 def factor(word):
@@ -18,80 +27,69 @@ def factor(word):
 			next(li)
 		else:
 			print("')'错误!")
-			kk=1
 			exit()
 	else:
 		print("表达式错误!")
-		kk=1
 		exit()
 
 
 def term(word):
-	a=factor(word)
-	while seed_code[a]==15 or 16:
+	a=factor(word)#word=x,a=end
+	while(seed_code[a]==15 or seed_code[a]==16):
 		b=scaner()
-		c=factor(b)	
+		a=factor(b)#b=3,a=;
+	return a
 
 
 def expression(w):
-	term(w)
-	while(seed_code[it]==13 or seed_code[it]==14):
+	b=term(w)# w=a,b=+
+	while(seed_code[b]==13 or seed_code[b]==14):
 		a=scaner()
-		term(a)
+		b=term(a)# a=x,b=end
+	return b
 
 
 def statement(w):
 	if re.match(pattern_identifier,w) is not None:
-		word=scaner()
-		if seed_code[word]==18:
+		c=scaner()
+		if seed_code[c]==18:
 			a=scaner()
-			expression(a)
+			b=expression(a)# a=a,b=end
+			return b
 		else:
 			print("赋值号错误!")
-			kk=1
 			exit()
 	else:
 		print("语句错误!")
-		kk=1
 		exit()
 
 
-def sentence(word):# ok
-	statement(word)
-	while(seed_code[it]==26):
+def sentence(word):
+	w=statement(word)
+	while(seed_code[w]==26):
 		a=scaner()
-		statement(a)
+		w=statement(a)# a=b,w=end
+	return w
 
 
 def main():
-	f = open("/Users/clara/Documents/学习/大三上/编译原理/实验二/input.txt", "r", encoding="utf-8")
-	temp = f.read()
-	f.close()
-	words = temp.split(" ")
-	for each_word in word:
-		
-
-
-
+	word=next(it)
 	if seed_code[word]==1:
 		w=scaner()
-		sentence(w)
-		if seed_code[it]==6:
-			w=scaner()
-			if seed_code[w]==0 and kk==0:
+		a=sentence(w)# w=a , a=end
+		if seed_code[a]==6:
+			b=scaner()
+			if seed_code[b]==0:
 				print("success!")
 				exit()
 			else:
 				print("缺#错误!")
 				exit()
 		else:
-			if kk!=1:
-				print("缺end	错误!")
-				kk=1
-				exit()
+			print("缺end	错误!")
+			exit()
 	else:
 		print("begin错误")
-		kk=1
 		exit()
 
 
